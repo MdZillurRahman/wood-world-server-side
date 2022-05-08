@@ -38,12 +38,12 @@ async function run(){
             res.send(item);
         });
 
-        //Order
-        app.post('/order', async (req, res) => {
-            const order = req.body;
-            const result = await orderCollection.findOne(order);
-            res.send(result);
-        })
+        app.put('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const item = await inventoryCollection.replaceOne(query);
+            res.send(item);
+        });
 
 
     }
