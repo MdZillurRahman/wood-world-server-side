@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -19,13 +19,33 @@ async function run(){
     try{
         await client.connect();
         const inventoryCollection = client.db('wood-world').collection('inventory');
+        const orderCollection = client.db('wood-world').collection('order');
 
+
+        // Inventory Collection
         app.get('/inventory', async (req, res) =>{
             const query = {};
             const cursor = inventoryCollection.find(query);
             const inventory = await cursor.toArray();
             res.send(inventory);
         })
+
+        // Service Details
+        app.get('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const item = await inventoryCollection.findOne(query);
+            res.send(item);
+        });
+
+        //Order
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.findOne(order);
+            res.send(result);
+        })
+
+
     }
     finally{
 
@@ -36,9 +56,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Wood World Running!')
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`listening on port ${port}`)
 })
