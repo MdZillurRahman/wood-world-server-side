@@ -19,7 +19,6 @@ async function run(){
     try{
         await client.connect();
         const inventoryCollection = client.db('wood-world').collection('inventory');
-        const orderCollection = client.db('wood-world').collection('order');
 
 
         // Inventory Collection
@@ -38,11 +37,19 @@ async function run(){
             res.send(item);
         });
 
-        app.put('/inventory/:id', async (req, res) => {
+        // POST
+        app.post('/inventory', async (req, res) => {
+            const newItem = req.body;
+            const result = await inventoryCollection.insertOne(newItem);
+            res.send(result);
+        });
+
+        // DELETE
+        app.delete('/inventory/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const item = await inventoryCollection.replaceOne(query);
-            res.send(item);
+            const result = await inventoryCollection.deleteOne(query);
+            res.send(result);
         });
 
 
