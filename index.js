@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
@@ -15,30 +16,38 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
-async function run(){
-    try{
+async function run() {
+    try {
         await client.connect();
         const inventoryCollection = client.db('wood-world').collection('inventory');
         const fullCollection = client.db('wood-world').collection('collection');
         const expertCollection = client.db('wood-world').collection('experts');
 
+        // AUTH
+        app.post('/login', async (req, res) => {
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '10d'
+            });
+            res.send({ accessToken });
+        })
 
         // Inventory Collection
-        app.get('/inventory', async (req, res) =>{
+        app.get('/inventory', async (req, res) => {
             const query = {};
             const cursor = inventoryCollection.find(query);
             const inventory = await cursor.toArray();
             res.send(inventory);
         })
 
-        app.get('/collection', async (req, res) =>{
+        app.get('/collection', async (req, res) => {
             const query = {};
             const cursor = fullCollection.find(query);
             const collection = await cursor.toArray();
             res.send(collection);
         })
 
-        app.get('/experts', async (req, res) =>{
+        app.get('/experts', async (req, res) => {
             const query = {};
             const cursor = expertCollection.find(query);
             const expert = await cursor.toArray();
@@ -61,14 +70,12 @@ async function run(){
         });
 
         //PUT
-        app.put('/inventory/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const item = await inventoryCollection.findOne(query);
-            const newQuantity = item.quantity - 1;
-            res.send(item.quantity);
-            console.log(newQuantity);
-        });
+        // app.put('/inventory/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const item = await inventoryCollection.updateOne(query);
+        //     res.send(item);
+        // });
 
         // POST
         app.post('/collection', async (req, res) => {
@@ -84,11 +91,11 @@ async function run(){
             const result = await fullCollection.deleteOne(query);
             res.send(result);
         });
-        
+
 
 
     }
-    finally{
+    finally {
 
     }
 }
