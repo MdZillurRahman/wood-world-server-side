@@ -20,6 +20,7 @@ async function run(){
         await client.connect();
         const inventoryCollection = client.db('wood-world').collection('inventory');
         const fullCollection = client.db('wood-world').collection('collection');
+        const expertCollection = client.db('wood-world').collection('experts');
 
 
         // Inventory Collection
@@ -35,6 +36,13 @@ async function run(){
             const cursor = fullCollection.find(query);
             const collection = await cursor.toArray();
             res.send(collection);
+        })
+
+        app.get('/experts', async (req, res) =>{
+            const query = {};
+            const cursor = expertCollection.find(query);
+            const expert = await cursor.toArray();
+            res.send(expert);
         })
 
         // Service Details
