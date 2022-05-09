@@ -45,20 +45,28 @@ async function run(){
             res.send(item);
         });
 
+        app.get('/collection/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const item = await fullCollection.findOne(query);
+            res.send(item);
+        });
+
         // POST
-        app.post('/inventory', async (req, res) => {
+        app.post('/collection', async (req, res) => {
             const newItem = req.body;
-            const result = await inventoryCollection.insertOne(newItem);
+            const result = await fullCollection.insertOne(newItem);
             res.send(result);
         });
 
         // DELETE
-        app.delete('/inventory/:id', async (req, res) => {
+        app.delete('/collection/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await inventoryCollection.deleteOne(query);
+            const result = await fullCollection.deleteOne(query);
             res.send(result);
         });
+        
 
 
     }
