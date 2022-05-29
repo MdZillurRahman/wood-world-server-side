@@ -21,7 +21,7 @@ async function run() {
         await client.connect();
         const inventoryCollection = client.db('wood-world').collection('inventory');
         const fullCollection = client.db('wood-world').collection('collection');
-        const expertCollection = client.db('wood-world').collection('experts');
+        const workerCollection = client.db('wood-world').collection('workers');
 
 
         // AUTH
@@ -48,11 +48,11 @@ async function run() {
             res.send(collection);
         })
 
-        app.get('/experts', async (req, res) => {
+        app.get('/workers', async (req, res) => {
             const query = {};
-            const cursor = expertCollection.find(query);
-            const expert = await cursor.toArray();
-            res.send(expert);
+            const cursor = workerCollection.find(query);
+            const worker = await cursor.toArray();
+            res.send(worker);
         })
 
         // Service Details
@@ -70,15 +70,26 @@ async function run() {
             res.send(item);
         });
 
-        //PUT
-        // app.put('/inventory/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const item = await inventoryCollection.updateOne(query);
-        //     res.send(item);
-        // });
+        //PATCH
+        app.patch('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const quantity = req.body;
 
-        // Nothing  Important
+            // const newQuantity = req.body.newQuantityValue;
+            // if (!newQuantity) {
+                const updateQuantity = quantity - 1;
+            // }
+            // else {
+            //     updateQuantity = quantity - newQuantity;
+            // }
+            console.log(updateQuantity);
+            const query = { _id: ObjectId(id) };
+            const inventory = await inventoryCollection.findOneAndUpdate(query,
+                { $set: { "quantity": updateQuantity } });
+            res.send(inventory);
+            console.log(inventory);
+        })
+
 
         // POST
         app.post('/collection', async (req, res) => {
