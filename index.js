@@ -22,6 +22,7 @@ async function run() {
         const inventoryCollection = client.db('wood-world').collection('inventory');
         const fullCollection = client.db('wood-world').collection('collection');
         const workerCollection = client.db('wood-world').collection('workers');
+        const reviewCollection = client.db('wood-world').collection('reviews');
 
 
         // AUTH
@@ -53,6 +54,11 @@ async function run() {
             const cursor = workerCollection.find(query);
             const worker = await cursor.toArray();
             res.send(worker);
+        })
+        app.get('/reviews', async (req, res) => {
+            const query = {};
+            const review = reviewCollection.find(query).toArray();
+            res.send(review);
         })
 
         // Service Details
