@@ -55,7 +55,7 @@ async function run() {
             const worker = await cursor.toArray();
             res.send(worker);
         })
-        
+
         app.get('/reviews', async (req, res) => {
             const query = {};
             const review = await reviewCollection.find(query).toArray();
@@ -80,21 +80,12 @@ async function run() {
         //PATCH
         app.patch('/inventory/:id', async (req, res) => {
             const id = req.params.id;
-            const quantity = req.body;
-
-            // const newQuantity = req.body.newQuantityValue;
-            // if (!newQuantity) {
-                const updateQuantity = quantity - 1;
-            // }
-            // else {
-            //     updateQuantity = quantity - newQuantity;
-            // }
+            const updateQuantity = req.body.newQuantity;
             console.log(updateQuantity);
             const query = { _id: ObjectId(id) };
             const inventory = await inventoryCollection.findOneAndUpdate(query,
                 { $set: { "quantity": updateQuantity } });
             res.send(inventory);
-            console.log(inventory);
         })
 
 
